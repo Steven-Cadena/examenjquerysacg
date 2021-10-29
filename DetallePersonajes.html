@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+</head>
+<body>
+    <div id="menu"></div>
+    <a href="./Home.html" class="btn btn-primary">Volver</a>
+    <div class="container">
+        <table class="table" id="table_result">
+            <thead>
+                <th>Nombre</th>
+                <th>Imagen</th>
+            </thead>
+            <tbody>
+
+            </tbody>
+            
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            const params = Object.fromEntries(urlSearchParams.entries());
+            var url_api_series = "https://apiseriespersonajes.azurewebsites.net";
+            $("#menu").load("./Index.html");
+            var request = "/api/Series/PersonajesSerie/" + params.idSerie;
+
+            $.ajax({
+                "url":url_api_series + request,
+                "method":"GET",
+                "dataType":"json",
+                "success": function(data) {
+                    console.log(data);
+                    console.log("nombre de la serie" + data.nombre)
+                    $.each(data, function(index, personaje) {
+                        console.log(personaje);
+                        var row = $("<tr>");
+                        row.append($("<td>", {"text":personaje.nombre}));
+                        row.append($("<td>").append($("<img style='width:150px', 'height:150px'>").attr("src", personaje.imagen)));
+                        $("#table_result tbody").append(row);
+
+                    });
+                }, 
+                "error": function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

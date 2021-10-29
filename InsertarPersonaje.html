@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+</head>
+<body>
+    <div id="menu"></div>
+    <div class="container">
+        
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Nombre:</label>
+              <input type="text" class="form-control" id="inputNombre" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Imagen:</label>
+              <input type="text" class="form-control" id="inputImagen">
+            </div>
+            <select id="selectSeries">
+            </select>
+            <button id="btnInsertar" class="btn btn-primary">Insertar Personaje</button>
+          
+    </div>
+    
+
+    <script>
+        $(document).ready(function(){
+
+            var url_api_series = "https://apiseriespersonajes.azurewebsites.net";
+
+            $("#menu").load("./Index.html");
+
+            //esto es para pintar los select de las series
+            var requestSeries =  "/api/Series";
+            $.ajax({
+                "url": url_api_series + requestSeries,
+                "method": "GET",
+                "dataType":"json",
+                "success":function(data) {
+                $.each(data, function(key, serie){
+                    console.log("data de serie" + data);
+                    var option = $("<option>", {
+                        "text": serie.nombre,
+                        "value": serie.idSerie
+                    });
+                    $("#selectSeries").append(option);
+                    });
+                }, 
+                "error": function(error){
+                    console.log(error);
+                }
+            });
+            // function del click para insertar el personaje
+            $("#btnInsertar").click(function(){
+                var request = "/api/Personajes";
+                var idserie = $("#selectSeries").val();
+                console.log("idseri es : " + idserie);
+                var insertPersonaje = {
+                    "nombre":$("#inputNombre").val(),
+                    "imagen":$("#inputImagen").val(),
+                    "idSerie":parseInt($("#selectSeries").val())//aqui va el id de la serie
+                }
+                $.ajax({
+                    "url":url_api_series + request,
+                    "method":"POST",
+                    "data":JSON.stringify(insertPersonaje),
+                    "contentType":"application/json",
+                    "success":function(data){
+                        //window.location.replace("./Home.html")
+                        window.location.replace("./DetallePersonajes.html?idSerie=" + idserie)
+                    },
+                    "error":function(error){
+                        console.log(error);
+                    }
+                });
+            });
+
+
+        });
+    </script>
+    
+</body>
+</html>
